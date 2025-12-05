@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>_3DModelViewer</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Tắt warning về compatibility -->
+    <NoWarn>NU1701</NoWarn>
+  </PropertyGroup> 
+  
+
+  <ItemGroup>
+    <!-- HelixToolkit cho WPF 3D rendering -->
+    <PackageReference Include="HelixToolkit.Wpf" Version="2.25.0" />
+    
+    <!-- AssimpNet cho load 3D models - version beta stable -->
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
+    
+    <!-- System.Numerics cho Vector3 -->
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+</Project>
