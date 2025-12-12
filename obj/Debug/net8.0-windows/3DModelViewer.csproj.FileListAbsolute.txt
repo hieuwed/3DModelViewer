@@ -1,5 +1,8 @@
 D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.exe
+D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.deps.json
+D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.runtimeconfig.json
 D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.dll
+D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.pdb
 D:\QA\3DModelViewer\bin\Debug\net8.0-windows\AssimpNet.dll
 D:\QA\3DModelViewer\bin\Debug\net8.0-windows\HelixToolkit.Wpf.dll
 D:\QA\3DModelViewer\bin\Debug\net8.0-windows\runtimes\linux-x64\native\libassimp.so
@@ -18,12 +21,10 @@ D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.GeneratedMSBuildEdito
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.AssemblyInfoInputs.cache
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.AssemblyInfo.cs
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.csproj.CoreCompileInputs.cache
+D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.sourcelink.json
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelV.47454468.Up2Date
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.dll
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\refint\3DModelViewer.dll
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.pdb
-D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.deps.json
-D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.runtimeconfig.json
-D:\QA\3DModelViewer\bin\Debug\net8.0-windows\3DModelViewer.pdb
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\3DModelViewer.genruntimeconfig.cache
 D:\QA\3DModelViewer\obj\Debug\net8.0-windows\ref\3DModelViewer.dll

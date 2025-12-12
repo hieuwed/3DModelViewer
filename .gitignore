@@ -1,0 +1,34 @@
+# Build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.user.props
+*.user.targets
+
+# Debug and log files
+*.log
+*.log.*
+
+# IDE settings
+.vs/
+.vscode/
+
+# Visual Studio cache/options directory
+.vs/
+
+# NuGet
+packages/
+*.nupkg
+
+# Rider
+.idea/
+*.sln.iml
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp

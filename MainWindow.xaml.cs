@@ -213,14 +213,6 @@ namespace _3DModelViewer
             }
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.MessageBox.Show("Chức năng lưu đang được phát triển",
-                          "Thông báo",
-                          MessageBoxButton.OK,
-                          MessageBoxImage.Information);
-        }
-
         #endregion
 
         #region Model Conversion
@@ -537,14 +529,6 @@ namespace _3DModelViewer
 
         #region Toolbar Actions
 
-        private void ToggleRenderMode_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.MessageBox.Show("Chức năng đổi render mode đang được phát triển",
-                          "Thông báo",
-                          MessageBoxButton.OK,
-                          MessageBoxImage.Information);
-        }
-
         private void ToggleLighting_Click(object sender, RoutedEventArgs e)
         {
             EnableLightingCheck.IsChecked = !EnableLightingCheck.IsChecked;
@@ -667,11 +651,11 @@ namespace _3DModelViewer
                     // Generate the mesh based on model type
                     MeshGeometry3D mesh = modelType switch
                     {
-                        "Cube" => ProceduralModelGenerator.GenerateCube(2.0),
-                        "Sphere" => ProceduralModelGenerator.GenerateSphere(1.5, 32),
-                        "Cylinder" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
-                        "Cone" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
-                        "Pyramid" => ProceduralModelGenerator.GeneratePyramid(2.0),
+                        "Hình lập phương" => ProceduralModelGenerator.GenerateCube(2.0),
+                        "Hình cầu" => ProceduralModelGenerator.GenerateSphere(1.5, 32),
+                        "Hình trụ" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
+                        "Hình nón" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
+                        "Hình chóp" => ProceduralModelGenerator.GeneratePyramid(2.0),
                         _ => ProceduralModelGenerator.GenerateCube(2.0)
                     };
                     // Create material

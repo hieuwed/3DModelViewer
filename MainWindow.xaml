@@ -111,10 +111,6 @@
                         Content="📂" 
                         ToolTip="Mở thư mục"
                         Click="OpenFolder_Click"/>
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="💾" 
-                        ToolTip="Lưu"
-                        Click="Save_Click"/>
                 
                 <Rectangle Width="2" Height="50" Fill="#34495e" Margin="10,0"/>
                 
@@ -122,10 +118,6 @@
                         Content="🔄" 
                         ToolTip="Reset camera"
                         Click="ResetCamera_Click"/>
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="🎨" 
-                        ToolTip="Render mode"
-                        Click="ToggleRenderMode_Click"/>
                 <Button Style="{StaticResource ToolbarButtonStyle}" 
                         Content="💡" 
                         ToolTip="Lighting"
@@ -163,7 +155,7 @@
                           Padding="10"
                           Background="White">
                     <StackPanel>
-                        <Button Content="📦 Cube" 
+                        <Button Content="📦 Hình lập phương" 
                                 Margin="0,5"
                                 Padding="10,8"
                                 Background="#3498db"
@@ -171,8 +163,8 @@
                                 BorderThickness="0"
                                 Cursor="Hand"
                                 Click="LoadSampleModel_Click"
-                                Tag="Cube"/>
-                        <Button Content="⚪ Sphere" 
+                                Tag="Hình lập phương"/>
+                        <Button Content="⚪ Hình cầu" 
                                 Margin="0,5"
                                 Padding="10,8"
                                 Background="#3498db"
@@ -180,8 +172,8 @@
                                 BorderThickness="0"
                                 Cursor="Hand"
                                 Click="LoadSampleModel_Click"
-                                Tag="Sphere"/>
-                        <Button Content="🥫 Cylinder" 
+                                Tag="Hình cầu"/>
+                        <Button Content="🥫 Hình trụ" 
                                 Margin="0,5"
                                 Padding="10,8"
                                 Background="#3498db"
@@ -189,8 +181,8 @@
                                 BorderThickness="0"
                                 Cursor="Hand"
                                 Click="LoadSampleModel_Click"
-                                Tag="Cylinder"/>
-                        <Button Content="🔺 Cone" 
+                                Tag="Hình trụ"/>
+                        <Button Content="🔺 Hình nón" 
                                 Margin="0,5"
                                 Padding="10,8"
                                 Background="#3498db"
@@ -198,8 +190,8 @@
                                 BorderThickness="0"
                                 Cursor="Hand"
                                 Click="LoadSampleModel_Click"
-                                Tag="Cone"/>
-                        <Button Content="🔶 Pyramid" 
+                                Tag="Hình nón"/>
+                        <Button Content="🔶 Hình chóp" 
                                 Margin="0,5"
                                 Padding="10,8"
                                 Background="#3498db"
@@ -207,7 +199,7 @@
                                 BorderThickness="0"
                                 Cursor="Hand"
                                 Click="LoadSampleModel_Click"
-                                Tag="Pyramid"/>
+                                Tag="Hình chóp"/>
                     </StackPanel>
                 </GroupBox>
                 
