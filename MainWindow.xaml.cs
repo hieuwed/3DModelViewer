@@ -212,6 +212,20 @@ namespace _3DModelViewer
 
         private void ClearCurrentModel()
         {
+            // Stop animation if running
+            if (_isAnimationRunning)
+            {
+                StopAnimation();
+            }
+
+            // Clear planet labels from canvas
+            if (PlanetLabelsCanvas != null)
+            {
+                PlanetLabelsCanvas.Children.Clear();
+            }
+            _planetLabels.Clear();
+
+            // Clear 3D model from viewport
             if (_currentModelVisual != null)
             {
                 Viewport3D.Children.Remove(_currentModelVisual);
@@ -348,9 +362,9 @@ namespace _3DModelViewer
                     materialGroup.Children.Add(new SpecularMaterial(brush, assimpMaterial.Shininess));
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Return default material on error
+                System.Diagnostics.Debug.WriteLine($"Error converting material: {ex.Message}");
                 return new DiffuseMaterial(System.Windows.Media.Brushes.Gray);
             }
 
@@ -523,9 +537,9 @@ namespace _3DModelViewer
                         Viewport3D.Background = new SolidColorBrush(color);
                         UpdateStatus("Đã đổi màu nền");
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Ignore color conversion errors
+                        System.Diagnostics.Debug.WriteLine($"Color conversion error: {ex.Message}");
                     }
                 }
             }
@@ -668,6 +682,7 @@ namespace _3DModelViewer
                         "Hình trụ" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
                         "Hình nón" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
                         "Hình chóp" => ProceduralModelGenerator.GeneratePyramid(2.0),
+                        "Khối chữ nhật" => ProceduralModelGenerator.GenerateCuboid(4.0, 2.0, 3.0),
                         _ => ProceduralModelGenerator.GenerateCube(2.0)
                     };
                     // Create material
@@ -836,9 +851,9 @@ namespace _3DModelViewer
                             label.Visibility = Visibility.Hidden;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // If projection fails, hide the label
+                        System.Diagnostics.Debug.WriteLine($"Label projection error: {ex.Message}");
                         label.Visibility = Visibility.Hidden;
                     }
                 }

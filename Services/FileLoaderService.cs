@@ -23,7 +23,7 @@ namespace _3DModelViewer.Services
         };
 
         private readonly AssimpContext _assimpContext;
-        private bool _disposed = false;
+        private bool _disposed;
 
         public FileLoaderService()
         {
@@ -63,8 +63,8 @@ namespace _3DModelViewer.Services
                     }
                     catch (Exception ex)
                     {
-                        // Log error nhưng continue với các file khác
-                        Console.WriteLine($"Error adding file {filePath}: {ex.Message}");
+                        // Skip files that cannot be added and continue with others
+                        System.Diagnostics.Debug.WriteLine($"Could not add file {filePath}: {ex.Message}");
                     }
                 }
             }

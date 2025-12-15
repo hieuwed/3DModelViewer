@@ -10,6 +10,15 @@ namespace _3DModelViewer.Services
     /// </summary>
     public class SolarSystemGenerator
     {
+        // Animation constants
+        private const double AnimationSpeedFactor = 0.5;
+        private const double DegreeToAngleThreshold = 360.0;
+        private const int DefaultSphereSegments = 32;
+        private const int PlanetSphereSegments = 16;
+        private const int OrbitalPathSegments = 100;
+        private const double OrbitalPathWidth = 0.02;
+        private const byte OrbitalPathAlpha = 100;
+        
         /// <summary>
         /// Planet data structure
         /// </summary>
@@ -38,7 +47,7 @@ namespace _3DModelViewer.Services
             var solarSystem = new Model3DGroup();
 
             // Create Sun (center)
-            var sun = CreateSphere(0.5, 32);
+            var sun = CreateSphere(0.5, DefaultSphereSegments);
             var sunModel = new GeometryModel3D
             {
                 Geometry = sun,
@@ -67,7 +76,7 @@ namespace _3DModelViewer.Services
                 var planet = planets[i];
 
                 // Create planet sphere
-                var mesh = CreateSphere(planet.Radius, 16);
+                var mesh = CreateSphere(planet.Radius, PlanetSphereSegments);
                 var planetMaterial = new DiffuseMaterial(new SolidColorBrush(planet.Color));
                 var geometryModel = new GeometryModel3D
                 {
@@ -78,7 +87,7 @@ namespace _3DModelViewer.Services
 
                 // Create orbital path visualization
                 var orbitalPath = CreateOrbitalPath(planet.OrbitalRadius);
-                var pathMaterial = new DiffuseMaterial(new SolidColorBrush(System.Windows.Media.Color.FromArgb(100, 255, 255, 255)));
+                var pathMaterial = new DiffuseMaterial(new SolidColorBrush(System.Windows.Media.Color.FromArgb(OrbitalPathAlpha, 255, 255, 255)));
                 var pathModel = new GeometryModel3D
                 {
                     Geometry = orbitalPath,
@@ -161,10 +170,9 @@ namespace _3DModelViewer.Services
         /// <summary>
         /// Create orbital path visualization
         /// </summary>
-        private static MeshGeometry3D CreateOrbitalPath(double radius, int segments = 100)
+        private static MeshGeometry3D CreateOrbitalPath(double radius, int segments = OrbitalPathSegments)
         {
             var mesh = new MeshGeometry3D();
-            double pathWidth = 0.02;
 
             for (int i = 0; i <= segments; i++)
             {
@@ -173,8 +181,8 @@ namespace _3DModelViewer.Services
                 double z = radius * Math.Sin(angle);
 
                 // Create line using thin rectangles
-                mesh.Positions.Add(new Point3D(x - pathWidth, 0, z - pathWidth));
-                mesh.Positions.Add(new Point3D(x + pathWidth, 0, z + pathWidth));
+                mesh.Positions.Add(new Point3D(x - OrbitalPathWidth, 0, z - OrbitalPathWidth));
+                mesh.Positions.Add(new Point3D(x + OrbitalPathWidth, 0, z + OrbitalPathWidth));
             }
 
             // Create indices for line segments
@@ -202,9 +210,6 @@ namespace _3DModelViewer.Services
         /// </summary>
         public static void UpdateAnimation(double deltaTime, double animationSpeed)
         {
-            // Animation speed factor for normal viewing speed
-            const double SPEED_FACTOR = 0.5;
-            
             // Update each planet in the animation map
             foreach (var kvp in _animationDataMap)
             {
@@ -212,14 +217,14 @@ namespace _3DModelViewer.Services
                 var animData = kvp.Value;
 
                 // Update orbital angle (slower movement around sun)
-                animData.OrbitalAngle += (360.0 / animData.PlanetData.OrbitalPeriod) * deltaTime * animationSpeed * SPEED_FACTOR;
-                if (animData.OrbitalAngle >= 360)
-                    animData.OrbitalAngle -= 360;
+                animData.OrbitalAngle += (DegreeToAngleThreshold / animData.PlanetData.OrbitalPeriod) * deltaTime * animationSpeed * AnimationSpeedFactor;
+                if (animData.OrbitalAngle >= DegreeToAngleThreshold)
+                    animData.OrbitalAngle -= DegreeToAngleThreshold;
 
                 // Update rotation angle (slower rotation on own axis)
-                animData.RotationAngle += animData.PlanetData.RotationSpeed * deltaTime * animationSpeed * SPEED_FACTOR;
-                if (animData.RotationAngle >= 360)
-                    animData.RotationAngle -= 360;
+                animData.RotationAngle += animData.PlanetData.RotationSpeed * deltaTime * animationSpeed * AnimationSpeedFactor;
+                if (animData.RotationAngle >= DegreeToAngleThreshold)
+                    animData.RotationAngle -= DegreeToAngleThreshold;
 
                 // Create transform group
                 var transformGroup = new Transform3DGroup();
