@@ -50,15 +50,15 @@ namespace _3DModelViewer.Services
             // Define planets data
             PlanetData[] planets = new PlanetData[]
             {
-                new PlanetData { Name = "Mercury", Radius = 0.08, OrbitalRadius = 1.5, OrbitalPeriod = 0.24, Color = System.Windows.Media.Colors.Gray, RotationSpeed = 0.04 },
-                new PlanetData { Name = "Venus", Radius = 0.14, OrbitalRadius = 2.5, OrbitalPeriod = 0.62, Color = System.Windows.Media.Colors.Orange, RotationSpeed = 0.015 },
-                new PlanetData { Name = "Earth", Radius = 0.15, OrbitalRadius = 3.5, OrbitalPeriod = 1.0, Color = System.Windows.Media.Colors.CornflowerBlue, RotationSpeed = 1.0 },
-                new PlanetData { Name = "Mars", Radius = 0.12, OrbitalRadius = 4.5, OrbitalPeriod = 1.88, Color = System.Windows.Media.Colors.Red, RotationSpeed = 0.97 },
-                new PlanetData { Name = "Jupiter", Radius = 0.35, OrbitalRadius = 6.0, OrbitalPeriod = 11.86, Color = System.Windows.Media.Colors.BurlyWood, RotationSpeed = 2.44 },
-                new PlanetData { Name = "Saturn", Radius = 0.30, OrbitalRadius = 7.5, OrbitalPeriod = 29.46, Color = System.Windows.Media.Colors.PaleGoldenrod, RotationSpeed = 2.27 },
-                new PlanetData { Name = "Uranus", Radius = 0.20, OrbitalRadius = 8.8, OrbitalPeriod = 84.01, Color = System.Windows.Media.Colors.CornflowerBlue, RotationSpeed = 1.40 },
-                new PlanetData { Name = "Neptune", Radius = 0.19, OrbitalRadius = 9.8, OrbitalPeriod = 164.79, Color = System.Windows.Media.Colors.RoyalBlue, RotationSpeed = 1.49 },
-                new PlanetData { Name = "Pluto", Radius = 0.06, OrbitalRadius = 10.8, OrbitalPeriod = 248.0, Color = System.Windows.Media.Colors.DarkGray, RotationSpeed = 6.39 }
+                new PlanetData { Name = "Sao Thủy", Radius = 0.08, OrbitalRadius = 1.5, OrbitalPeriod = 0.24, Color = System.Windows.Media.Colors.Gray, RotationSpeed = 0.04 },
+                new PlanetData { Name = "Sao Kim", Radius = 0.14, OrbitalRadius = 2.5, OrbitalPeriod = 0.62, Color = System.Windows.Media.Colors.Orange, RotationSpeed = 0.015 },
+                new PlanetData { Name = "Trái Đất", Radius = 0.15, OrbitalRadius = 3.5, OrbitalPeriod = 1.0, Color = System.Windows.Media.Colors.CornflowerBlue, RotationSpeed = 1.0 },
+                new PlanetData { Name = "Sao Hỏa", Radius = 0.12, OrbitalRadius = 4.5, OrbitalPeriod = 1.88, Color = System.Windows.Media.Colors.Red, RotationSpeed = 0.97 },
+                new PlanetData { Name = "Sao Mộc", Radius = 0.35, OrbitalRadius = 6.0, OrbitalPeriod = 11.86, Color = System.Windows.Media.Colors.BurlyWood, RotationSpeed = 2.44 },
+                new PlanetData { Name = "Sao Thổ", Radius = 0.30, OrbitalRadius = 7.5, OrbitalPeriod = 29.46, Color = System.Windows.Media.Colors.PaleGoldenrod, RotationSpeed = 2.27 },
+                new PlanetData { Name = "Sao Thiên Vương", Radius = 0.20, OrbitalRadius = 8.8, OrbitalPeriod = 84.01, Color = System.Windows.Media.Colors.CornflowerBlue, RotationSpeed = 1.40 },
+                new PlanetData { Name = "Sao Hải Vương", Radius = 0.19, OrbitalRadius = 9.8, OrbitalPeriod = 164.79, Color = System.Windows.Media.Colors.RoyalBlue, RotationSpeed = 1.49 },
+                new PlanetData { Name = "Sao Diêm Vương", Radius = 0.06, OrbitalRadius = 10.8, OrbitalPeriod = 248.0, Color = System.Windows.Media.Colors.DarkGray, RotationSpeed = 6.39 }
             };
 
             // Create planets with orbital paths
@@ -202,19 +202,22 @@ namespace _3DModelViewer.Services
         /// </summary>
         public static void UpdateAnimation(double deltaTime, double animationSpeed)
         {
+            // Animation speed factor for normal viewing speed
+            const double SPEED_FACTOR = 0.5;
+            
             // Update each planet in the animation map
             foreach (var kvp in _animationDataMap)
             {
                 var planetVisual = kvp.Key;
                 var animData = kvp.Value;
 
-                // Update orbital angle
-                animData.OrbitalAngle += (360.0 / animData.PlanetData.OrbitalPeriod) * deltaTime * animationSpeed;
+                // Update orbital angle (slower movement around sun)
+                animData.OrbitalAngle += (360.0 / animData.PlanetData.OrbitalPeriod) * deltaTime * animationSpeed * SPEED_FACTOR;
                 if (animData.OrbitalAngle >= 360)
                     animData.OrbitalAngle -= 360;
 
-                // Update rotation angle
-                animData.RotationAngle += animData.PlanetData.RotationSpeed * deltaTime * animationSpeed;
+                // Update rotation angle (slower rotation on own axis)
+                animData.RotationAngle += animData.PlanetData.RotationSpeed * deltaTime * animationSpeed * SPEED_FACTOR;
                 if (animData.RotationAngle >= 360)
                     animData.RotationAngle -= 360;
 
@@ -235,6 +238,33 @@ namespace _3DModelViewer.Services
                 // Apply transforms
                 planetVisual.Transform = transformGroup;
             }
+        }
+
+        /// <summary>
+        /// Get current planet positions and names for text labels
+        /// </summary>
+        public static List<(string Name, Point3D Position)> GetPlanetPositions()
+        {
+            var positions = new List<(string, Point3D)>();
+            
+            // Add Sun at center
+            positions.Add(("Mặt Trời", new Point3D(0, 0, 0)));
+            
+            // Add planets
+            foreach (var kvp in _animationDataMap)
+            {
+                var animData = kvp.Value;
+                if (animData.Visual != null)
+                {
+                    // Calculate position based on orbital angle
+                    double radians = animData.OrbitalAngle * Math.PI / 180.0;
+                    double x = animData.PlanetData.OrbitalRadius * Math.Cos(radians);
+                    double z = animData.PlanetData.OrbitalRadius * Math.Sin(radians);
+                    positions.Add((animData.PlanetData.Name, new Point3D(x, 0, z)));
+                }
+            }
+            
+            return positions;
         }
     }
 

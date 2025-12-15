@@ -37,7 +37,7 @@ namespace _3DModelViewer
         // Solar System Animation
         private DispatcherTimer? _animationTimer;
         private bool _isAnimationRunning = false;
-        private double _lastFrameTime = 0;
+        private Dictionary<string, TextBlock> _planetLabels = new();
 
         public MainWindow()
         {
@@ -735,6 +735,10 @@ namespace _3DModelViewer
                 // Add to viewport
                 Viewport3D.Children.Add(_currentModelVisual);
 
+                // Create planet name labels
+                _planetLabels.Clear();
+                CreatePlanetLabels();
+
                 // Zoom to fit
                 Viewport3D.ZoomExtents();
 
@@ -755,6 +759,147 @@ namespace _3DModelViewer
                               "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 UpdateStatus($"Lỗi: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Create TextBlock labels for each planet
+        /// </summary>
+        private void CreatePlanetLabels()
+        {
+            // Get planet positions to create labels for each
+            var positions = SolarSystemGenerator.GetPlanetPositions();
+            
+            foreach (var (name, position) in positions)
+            {
+                var label = new TextBlock
+                {
+                    Text = name,
+                    Foreground = System.Windows.Media.Brushes.White,
+                    FontSize = 12,
+                    FontWeight = System.Windows.FontWeights.Bold,
+                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 0, 0, 0)),
+                    Padding = new Thickness(4, 2, 4, 2),
+                    TextAlignment = System.Windows.TextAlignment.Center
+                };
+                
+                // Add to viewport canvas overlay
+                Canvas.SetLeft(label, 0);
+                Canvas.SetTop(label, 0);
+                
+                _planetLabels[name] = label;
+            }
+        }
+
+        /// <summary>
+        /// Update planet label positions based on 3D to 2D projection
+        /// </summary>
+        private void UpdatePlanetLabels()
+        {
+            if (_planetLabels.Count == 0 || PlanetLabelsCanvas == null || Viewport3D.Camera == null)
+                return;
+
+            var positions = SolarSystemGenerator.GetPlanetPositions();
+            var perspectiveCamera = Viewport3D.Camera as PerspectiveCamera;
+            
+            if (perspectiveCamera == null)
+                return;
+
+            foreach (var (name, position3D) in positions)
+            {
+                if (_planetLabels.TryGetValue(name, out var label))
+                {
+                    try
+                    {
+                        // Project 3D point to 2D screen coordinates using camera and viewport dimensions
+                        var screenPoint = ProjectPoint3D(position3D, perspectiveCamera, Viewport3D.ActualWidth, Viewport3D.ActualHeight);
+                        
+                        if (!double.IsNaN(screenPoint.X) && !double.IsNaN(screenPoint.Y) && 
+                            screenPoint.X > -100 && screenPoint.X < Viewport3D.ActualWidth + 100 &&
+                            screenPoint.Y > -100 && screenPoint.Y < Viewport3D.ActualHeight + 100)
+                        {
+                            // Add label to canvas if not already added
+                            if (!PlanetLabelsCanvas.Children.Contains(label))
+                            {
+                                PlanetLabelsCanvas.Children.Add(label);
+                            }
+                            
+                            // Update label position with small offset to avoid blocking the planet
+                            Canvas.SetLeft(label, screenPoint.X - 30);
+                            Canvas.SetTop(label, screenPoint.Y - 10);
+                            
+                            // Show label
+                            label.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            // Hide label if it's outside viewport
+                            label.Visibility = Visibility.Hidden;
+                        }
+                    }
+                    catch
+                    {
+                        // If projection fails, hide the label
+                        label.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Project a 3D point to 2D screen coordinates
+        /// </summary>
+        private System.Windows.Point ProjectPoint3D(Point3D point3D, PerspectiveCamera camera, double viewportWidth, double viewportHeight)
+        {
+            // Create a projection matrix from camera parameters
+            var aspectRatio = viewportWidth / viewportHeight;
+            var fov = camera.FieldOfView * Math.PI / 180.0; // Convert to radians
+            
+            // Vector from camera to point
+            var direction = point3D - camera.Position;
+            var distance = direction.Length;
+            
+            if (distance == 0)
+                return new System.Windows.Point(double.NaN, double.NaN);
+            
+            // Normalize direction
+            direction.Normalize();
+            
+            // Look direction (forward)
+            var look = camera.LookDirection;
+            look.Normalize();
+            
+            // Calculate right vector
+            var right = Vector3D.CrossProduct(look, camera.UpDirection);
+            right.Normalize();
+            
+            // Recalculate up to ensure orthogonality
+            var up = Vector3D.CrossProduct(right, look);
+            up.Normalize();
+            
+            // Project point onto camera's view plane
+            var lookComponent = Vector3D.DotProduct(direction, look);
+            
+            // Point is behind camera
+            if (lookComponent <= 0)
+                return new System.Windows.Point(double.NaN, double.NaN);
+            
+            var rightComponent = Vector3D.DotProduct(direction, right);
+            var upComponent = Vector3D.DotProduct(direction, up);
+            
+            // Calculate normalized device coordinates
+            var halfFovTan = Math.Tan(fov / 2.0);
+            var x = (rightComponent / lookComponent) / (halfFovTan * aspectRatio);
+            var y = -(upComponent / lookComponent) / halfFovTan;
+            
+            // Clamp to -1 to 1 range for view frustum
+            x = Math.Max(-1, Math.Min(1, x));
+            y = Math.Max(-1, Math.Min(1, y));
+            
+            // Convert to screen coordinates
+            var screenX = (x + 1.0) * viewportWidth / 2.0;
+            var screenY = (y + 1.0) * viewportHeight / 2.0;
+            
+            return new System.Windows.Point(screenX, screenY);
         }
 
         /// <summary>
@@ -794,7 +939,6 @@ namespace _3DModelViewer
             // Create animation timer
             _animationTimer = new DispatcherTimer();
             _animationTimer.Interval = TimeSpan.FromMilliseconds(16); // ~60 FPS
-            _lastFrameTime = 0;
             _animationTimer.Tick += AnimationTimer_Tick;
             _animationTimer.Start();
         }
@@ -823,11 +967,14 @@ namespace _3DModelViewer
             if (_currentModelVisual == null)
                 return;
 
-            _lastFrameTime += 0.016; // 16ms per frame
             double animationSpeed = AnimationSpeedSlider.Value;
+            const double DELTA_TIME = 0.016; // 16ms per frame (~60 FPS)
 
-            // Update solar system animation
-            SolarSystemGenerator.UpdateAnimation(_lastFrameTime, animationSpeed);
+            // Update solar system animation with fixed delta time per frame
+            SolarSystemGenerator.UpdateAnimation(DELTA_TIME, animationSpeed);
+            
+            // Update planet name labels
+            UpdatePlanetLabels();
         }
 
         #endregion

@@ -326,34 +326,42 @@
         <!-- CENTER - 3D Viewport -->
         <Border Grid.Row="1" Grid.Column="1" 
                 Background="#95a5a6">
-            <helix:HelixViewport3D x:Name="Viewport3D"
-                                  Background="#95a5a6"
-                                  ShowCoordinateSystem="True"
-                                  ShowViewCube="True"
-                                  ZoomExtentsWhenLoaded="True"
-                                  CameraRotationMode="Turntable">
+            <Grid>
+                <!-- 3D Viewport -->
+                <helix:HelixViewport3D x:Name="Viewport3D"
+                                      Background="#95a5a6"
+                                      ShowCoordinateSystem="True"
+                                      ShowViewCube="True"
+                                      ZoomExtentsWhenLoaded="True"
+                                      CameraRotationMode="Turntable">
+                    
+                    <!-- Camera -->
+                    <helix:HelixViewport3D.Camera>
+                        <PerspectiveCamera x:Name="Camera"
+                                          Position="5,5,5" 
+                                          LookDirection="-5,-5,-5"
+                                          UpDirection="0,1,0"
+                                          FieldOfView="45"/>
+                    </helix:HelixViewport3D.Camera>
+                    
+                    <!-- Default Lighting -->
+                    <helix:DefaultLights/>
+                    
+                    <!-- Grid -->
+                    <helix:GridLinesVisual3D x:Name="GridLines"
+                                            Width="20"
+                                            Length="20"
+                                            MinorDistance="1"
+                                            MajorDistance="5"
+                                            Thickness="0.01"
+                                            Fill="#40000000"/>
+                </helix:HelixViewport3D>
                 
-                <!-- Camera -->
-                <helix:HelixViewport3D.Camera>
-                    <PerspectiveCamera x:Name="Camera"
-                                      Position="5,5,5" 
-                                      LookDirection="-5,-5,-5"
-                                      UpDirection="0,1,0"
-                                      FieldOfView="45"/>
-                </helix:HelixViewport3D.Camera>
-                
-                <!-- Default Lighting -->
-                <helix:DefaultLights/>
-                
-                <!-- Grid -->
-                <helix:GridLinesVisual3D x:Name="GridLines"
-                                        Width="20"
-                                        Length="20"
-                                        MinorDistance="1"
-                                        MajorDistance="5"
-                                        Thickness="0.01"
-                                        Fill="#40000000"/>
-            </helix:HelixViewport3D>
+                <!-- Canvas overlay for planet labels -->
+                <Canvas x:Name="PlanetLabelsCanvas"
+                        Background="Transparent"
+                        IsHitTestVisible="False"/>
+            </Grid>
         </Border>
         
         <!-- RIGHT PANEL - Properties & Controls -->
