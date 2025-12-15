@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 using HelixToolkit.Wpf;
 using _3DModelViewer.Models;
 using _3DModelViewer.Services;
@@ -32,6 +33,11 @@ namespace _3DModelViewer
         private RotateTransform3D _rotateY;
         private RotateTransform3D _rotateZ;
         private ScaleTransform3D _scale;
+
+        // Solar System Animation
+        private DispatcherTimer? _animationTimer;
+        private bool _isAnimationRunning = false;
+        private double _lastFrameTime = 0;
 
         public MainWindow()
         {
@@ -647,6 +653,12 @@ namespace _3DModelViewer
             {
                 try
                 {
+                    if (modelType == "Hệ mặt trời")
+                    {
+                        LoadSolarSystem();
+                        return;
+                    }
+
                     UpdateStatus($"Đang tạo {modelType}...");
                     // Generate the mesh based on model type
                     MeshGeometry3D mesh = modelType switch
@@ -701,7 +713,135 @@ namespace _3DModelViewer
                 }
             }
         }
+
+        /// <summary>
+        /// Load and display solar system
+        /// </summary>
+        private void LoadSolarSystem()
+        {
+            try
+            {
+                UpdateStatus("Đang tạo Hệ mặt trời...");
+
+                // Stop previous animation
+                StopAnimation();
+
+                // Clear previous model
+                ClearCurrentModel();
+
+                // Generate solar system
+                _currentModelVisual = SolarSystemGenerator.GenerateSolarSystem();
+
+                // Add to viewport
+                Viewport3D.Children.Add(_currentModelVisual);
+
+                // Zoom to fit
+                Viewport3D.ZoomExtents();
+
+                // Show animation controls
+                AnimationControlsGroup.Visibility = Visibility.Visible;
+
+                // Create sample model info
+                var sampleModel = new Model3DFile("Hệ mặt trời", 50000, 1000);
+                _currentModel = sampleModel;
+
+                // Update UI
+                UpdateModelInfo(sampleModel);
+                UpdateStatus("Đã tạo Hệ mặt trời - Nhấn ▶️ để phát");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi khi tạo hệ mặt trời: {ex.Message}",
+                              "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus($"Lỗi: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Play/Pause animation
+        /// </summary>
+        private void PlayPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentModelVisual == null || _currentModel?.FileName != "Hệ mặt trời")
+            {
+                System.Windows.MessageBox.Show("Vui lòng tạo Hệ mặt trời trước",
+                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (_isAnimationRunning)
+            {
+                StopAnimation();
+            }
+            else
+            {
+                StartAnimation();
+            }
+        }
+
+        /// <summary>
+        /// Start animation
+        /// </summary>
+        private void StartAnimation()
+        {
+            if (_animationTimer != null && _animationTimer.IsEnabled)
+                return;
+
+            _isAnimationRunning = true;
+            PlayPauseButton.Content = "⏸️ Dừng";
+            UpdateStatus("Animation đang chạy...");
+
+            // Create animation timer
+            _animationTimer = new DispatcherTimer();
+            _animationTimer.Interval = TimeSpan.FromMilliseconds(16); // ~60 FPS
+            _lastFrameTime = 0;
+            _animationTimer.Tick += AnimationTimer_Tick;
+            _animationTimer.Start();
+        }
+
+        /// <summary>
+        /// Stop animation
+        /// </summary>
+        private void StopAnimation()
+        {
+            _isAnimationRunning = false;
+            PlayPauseButton.Content = "▶️ Phát";
+            UpdateStatus("Animation dừng");
+
+            if (_animationTimer != null)
+            {
+                _animationTimer.Stop();
+                _animationTimer = null;
+            }
+        }
+
+        /// <summary>
+        /// Animation timer tick
+        /// </summary>
+        private void AnimationTimer_Tick(object? sender, EventArgs e)
+        {
+            if (_currentModelVisual == null)
+                return;
+
+            _lastFrameTime += 0.016; // 16ms per frame
+            double animationSpeed = AnimationSpeedSlider.Value;
+
+            // Update solar system animation
+            SolarSystemGenerator.UpdateAnimation(_lastFrameTime, animationSpeed);
+        }
+
         #endregion
+
+        /// <summary>
+        /// Handle animation speed slider change
+        /// </summary>
+        private void AnimationSpeedSlider_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (AnimationSpeedText != null)
+            {
+                AnimationSpeedText.Text = $"{e.NewValue:F1}x";
+            }
+        }
     }
     
 }

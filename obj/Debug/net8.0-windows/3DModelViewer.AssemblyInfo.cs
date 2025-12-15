@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("3DModelViewer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+995542853592d9c5f7628b20affca5699623acb6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c977191b8ec6b007bd863ec003908d2cb7dffcbd")]
 [assembly: System.Reflection.AssemblyProductAttribute("3DModelViewer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("3DModelViewer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
