@@ -21,8 +21,6 @@ namespace _3DModelViewer.Models
         // Render mode
         public bool ShowWireframe { get; set; } = false;
 
-
-
         // Performance settings
         public bool EnableAntialiasing { get; set; } = true;
         public int MaxFPS { get; set; } = 60;

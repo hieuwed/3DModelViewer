@@ -10,6 +10,9 @@ namespace _3DModelViewer.Services
     /// </summary>
     public class ProceduralModelGenerator
     {
+        private const int DefaultSphereSegments = 32;
+        private const double CubeNormalizeValue = 1.0;
+        
         /// <summary>
         /// Generates a cube mesh
         /// </summary>
@@ -365,6 +368,65 @@ namespace _3DModelViewer.Services
                 normal.Normalize();
                 mesh.Normals[i] = normal;
             }
+        }
+
+        /// <summary>
+        /// Generates a cuboid (rectangular box) mesh with custom width, height, and depth
+        /// </summary>
+        public static MeshGeometry3D GenerateCuboid(double width = 2.0, double height = 1.5, double depth = 1.0)
+        {
+            var mesh = new MeshGeometry3D();
+            
+            double w = width / 2.0;
+            double h = height / 2.0;
+            double d = depth / 2.0;
+
+            // Define 8 vertices of the cuboid
+            Point3D[] vertices = new Point3D[]
+            {
+                new Point3D(-w, -h, -d), // 0 - front bottom left
+                new Point3D( w, -h, -d), // 1 - front bottom right
+                new Point3D( w,  h, -d), // 2 - front top right
+                new Point3D(-w,  h, -d), // 3 - front top left
+                new Point3D(-w, -h,  d), // 4 - back bottom left
+                new Point3D( w, -h,  d), // 5 - back bottom right
+                new Point3D( w,  h,  d), // 6 - back top right
+                new Point3D(-w,  h,  d)  // 7 - back top left
+            };
+
+            // Add all vertices
+            foreach (var vertex in vertices)
+            {
+                mesh.Positions.Add(vertex);
+            }
+
+            // Define 6 faces (each face has 2 triangles = 6 indices)
+            int[] indices = new int[]
+            {
+                // Front face (z = -d)
+                0, 1, 2,  0, 2, 3,
+                // Back face (z = d)
+                5, 4, 7,  5, 7, 6,
+                // Left face (x = -w)
+                4, 0, 3,  4, 3, 7,
+                // Right face (x = w)
+                1, 5, 6,  1, 6, 2,
+                // Top face (y = h)
+                3, 2, 6,  3, 6, 7,
+                // Bottom face (y = -h)
+                4, 5, 1,  4, 1, 0
+            };
+
+            // Add all triangles
+            foreach (var index in indices)
+            {
+                mesh.TriangleIndices.Add(index);
+            }
+
+            // Calculate and add normals
+            CalculateNormals(mesh);
+
+            return mesh;
         }
     }
 

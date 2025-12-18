@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 using HelixToolkit.Wpf;
 using _3DModelViewer.Models;
 using _3DModelViewer.Services;
@@ -32,6 +33,11 @@ namespace _3DModelViewer
         private RotateTransform3D _rotateY;
         private RotateTransform3D _rotateZ;
         private ScaleTransform3D _scale;
+
+        // Solar System Animation
+        private DispatcherTimer? _animationTimer;
+        private bool _isAnimationRunning = false;
+        private Dictionary<string, TextBlock> _planetLabels = new();
 
         public MainWindow()
         {
@@ -206,6 +212,20 @@ namespace _3DModelViewer
 
         private void ClearCurrentModel()
         {
+            // Stop animation if running
+            if (_isAnimationRunning)
+            {
+                StopAnimation();
+            }
+
+            // Clear planet labels from canvas
+            if (PlanetLabelsCanvas != null)
+            {
+                PlanetLabelsCanvas.Children.Clear();
+            }
+            _planetLabels.Clear();
+
+            // Clear 3D model from viewport
             if (_currentModelVisual != null)
             {
                 Viewport3D.Children.Remove(_currentModelVisual);
@@ -342,9 +362,9 @@ namespace _3DModelViewer
                     materialGroup.Children.Add(new SpecularMaterial(brush, assimpMaterial.Shininess));
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Return default material on error
+                System.Diagnostics.Debug.WriteLine($"Error converting material: {ex.Message}");
                 return new DiffuseMaterial(System.Windows.Media.Brushes.Gray);
             }
 
@@ -517,9 +537,9 @@ namespace _3DModelViewer
                         Viewport3D.Background = new SolidColorBrush(color);
                         UpdateStatus("Đã đổi màu nền");
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Ignore color conversion errors
+                        System.Diagnostics.Debug.WriteLine($"Color conversion error: {ex.Message}");
                     }
                 }
             }
@@ -647,6 +667,12 @@ namespace _3DModelViewer
             {
                 try
                 {
+                    if (modelType == "Hệ mặt trời")
+                    {
+                        LoadSolarSystem();
+                        return;
+                    }
+
                     UpdateStatus($"Đang tạo {modelType}...");
                     // Generate the mesh based on model type
                     MeshGeometry3D mesh = modelType switch
@@ -656,6 +682,7 @@ namespace _3DModelViewer
                         "Hình trụ" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
                         "Hình nón" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
                         "Hình chóp" => ProceduralModelGenerator.GeneratePyramid(2.0),
+                        "Khối chữ nhật" => ProceduralModelGenerator.GenerateCuboid(4.0, 2.0, 3.0),
                         _ => ProceduralModelGenerator.GenerateCube(2.0)
                     };
                     // Create material
@@ -701,7 +728,282 @@ namespace _3DModelViewer
                 }
             }
         }
+
+        /// <summary>
+        /// Load and display solar system
+        /// </summary>
+        private void LoadSolarSystem()
+        {
+            try
+            {
+                UpdateStatus("Đang tạo Hệ mặt trời...");
+
+                // Stop previous animation
+                StopAnimation();
+
+                // Clear previous model
+                ClearCurrentModel();
+
+                // Generate solar system
+                _currentModelVisual = SolarSystemGenerator.GenerateSolarSystem();
+
+                // Add to viewport
+                Viewport3D.Children.Add(_currentModelVisual);
+
+                // Create planet name labels
+                _planetLabels.Clear();
+                CreatePlanetLabels();
+
+                // Zoom to fit
+                Viewport3D.ZoomExtents();
+
+                // Show animation controls
+                AnimationControlsGroup.Visibility = Visibility.Visible;
+
+                // Create sample model info
+                var sampleModel = new Model3DFile("Hệ mặt trời", 50000, 1000);
+                _currentModel = sampleModel;
+
+                // Update UI
+                UpdateModelInfo(sampleModel);
+                UpdateStatus("Đã tạo Hệ mặt trời - Nhấn ▶️ để phát");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi khi tạo hệ mặt trời: {ex.Message}",
+                              "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus($"Lỗi: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Create TextBlock labels for each planet
+        /// </summary>
+        private void CreatePlanetLabels()
+        {
+            // Get planet positions to create labels for each
+            var positions = SolarSystemGenerator.GetPlanetPositions();
+            
+            foreach (var (name, position) in positions)
+            {
+                var label = new TextBlock
+                {
+                    Text = name,
+                    Foreground = System.Windows.Media.Brushes.White,
+                    FontSize = 12,
+                    FontWeight = System.Windows.FontWeights.Bold,
+                    Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 0, 0, 0)),
+                    Padding = new Thickness(4, 2, 4, 2),
+                    TextAlignment = System.Windows.TextAlignment.Center
+                };
+                
+                // Add to viewport canvas overlay
+                Canvas.SetLeft(label, 0);
+                Canvas.SetTop(label, 0);
+                
+                _planetLabels[name] = label;
+            }
+        }
+
+        /// <summary>
+        /// Update planet label positions based on 3D to 2D projection
+        /// </summary>
+        private void UpdatePlanetLabels()
+        {
+            if (_planetLabels.Count == 0 || PlanetLabelsCanvas == null || Viewport3D.Camera == null)
+                return;
+
+            var positions = SolarSystemGenerator.GetPlanetPositions();
+            var perspectiveCamera = Viewport3D.Camera as PerspectiveCamera;
+            
+            if (perspectiveCamera == null)
+                return;
+
+            foreach (var (name, position3D) in positions)
+            {
+                if (_planetLabels.TryGetValue(name, out var label))
+                {
+                    try
+                    {
+                        // Project 3D point to 2D screen coordinates using camera and viewport dimensions
+                        var screenPoint = ProjectPoint3D(position3D, perspectiveCamera, Viewport3D.ActualWidth, Viewport3D.ActualHeight);
+                        
+                        if (!double.IsNaN(screenPoint.X) && !double.IsNaN(screenPoint.Y) && 
+                            screenPoint.X > -100 && screenPoint.X < Viewport3D.ActualWidth + 100 &&
+                            screenPoint.Y > -100 && screenPoint.Y < Viewport3D.ActualHeight + 100)
+                        {
+                            // Add label to canvas if not already added
+                            if (!PlanetLabelsCanvas.Children.Contains(label))
+                            {
+                                PlanetLabelsCanvas.Children.Add(label);
+                            }
+                            
+                            // Update label position with small offset to avoid blocking the planet
+                            Canvas.SetLeft(label, screenPoint.X - 30);
+                            Canvas.SetTop(label, screenPoint.Y - 10);
+                            
+                            // Show label
+                            label.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            // Hide label if it's outside viewport
+                            label.Visibility = Visibility.Hidden;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Label projection error: {ex.Message}");
+                        label.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Project a 3D point to 2D screen coordinates
+        /// </summary>
+        private System.Windows.Point ProjectPoint3D(Point3D point3D, PerspectiveCamera camera, double viewportWidth, double viewportHeight)
+        {
+            // Create a projection matrix from camera parameters
+            var aspectRatio = viewportWidth / viewportHeight;
+            var fov = camera.FieldOfView * Math.PI / 180.0; // Convert to radians
+            
+            // Vector from camera to point
+            var direction = point3D - camera.Position;
+            var distance = direction.Length;
+            
+            if (distance == 0)
+                return new System.Windows.Point(double.NaN, double.NaN);
+            
+            // Normalize direction
+            direction.Normalize();
+            
+            // Look direction (forward)
+            var look = camera.LookDirection;
+            look.Normalize();
+            
+            // Calculate right vector
+            var right = Vector3D.CrossProduct(look, camera.UpDirection);
+            right.Normalize();
+            
+            // Recalculate up to ensure orthogonality
+            var up = Vector3D.CrossProduct(right, look);
+            up.Normalize();
+            
+            // Project point onto camera's view plane
+            var lookComponent = Vector3D.DotProduct(direction, look);
+            
+            // Point is behind camera
+            if (lookComponent <= 0)
+                return new System.Windows.Point(double.NaN, double.NaN);
+            
+            var rightComponent = Vector3D.DotProduct(direction, right);
+            var upComponent = Vector3D.DotProduct(direction, up);
+            
+            // Calculate normalized device coordinates
+            var halfFovTan = Math.Tan(fov / 2.0);
+            var x = (rightComponent / lookComponent) / (halfFovTan * aspectRatio);
+            var y = -(upComponent / lookComponent) / halfFovTan;
+            
+            // Clamp to -1 to 1 range for view frustum
+            x = Math.Max(-1, Math.Min(1, x));
+            y = Math.Max(-1, Math.Min(1, y));
+            
+            // Convert to screen coordinates
+            var screenX = (x + 1.0) * viewportWidth / 2.0;
+            var screenY = (y + 1.0) * viewportHeight / 2.0;
+            
+            return new System.Windows.Point(screenX, screenY);
+        }
+
+        /// <summary>
+        /// Play/Pause animation
+        /// </summary>
+        private void PlayPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentModelVisual == null || _currentModel?.FileName != "Hệ mặt trời")
+            {
+                System.Windows.MessageBox.Show("Vui lòng tạo Hệ mặt trời trước",
+                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (_isAnimationRunning)
+            {
+                StopAnimation();
+            }
+            else
+            {
+                StartAnimation();
+            }
+        }
+
+        /// <summary>
+        /// Start animation
+        /// </summary>
+        private void StartAnimation()
+        {
+            if (_animationTimer != null && _animationTimer.IsEnabled)
+                return;
+
+            _isAnimationRunning = true;
+            PlayPauseButton.Content = "⏸️ Dừng";
+            UpdateStatus("Animation đang chạy...");
+
+            // Create animation timer
+            _animationTimer = new DispatcherTimer();
+            _animationTimer.Interval = TimeSpan.FromMilliseconds(16); // ~60 FPS
+            _animationTimer.Tick += AnimationTimer_Tick;
+            _animationTimer.Start();
+        }
+
+        /// <summary>
+        /// Stop animation
+        /// </summary>
+        private void StopAnimation()
+        {
+            _isAnimationRunning = false;
+            PlayPauseButton.Content = "▶️ Phát";
+            UpdateStatus("Animation dừng");
+
+            if (_animationTimer != null)
+            {
+                _animationTimer.Stop();
+                _animationTimer = null;
+            }
+        }
+
+        /// <summary>
+        /// Animation timer tick
+        /// </summary>
+        private void AnimationTimer_Tick(object? sender, EventArgs e)
+        {
+            if (_currentModelVisual == null)
+                return;
+
+            double animationSpeed = AnimationSpeedSlider.Value;
+            const double DELTA_TIME = 0.016; // 16ms per frame (~60 FPS)
+
+            // Update solar system animation with fixed delta time per frame
+            SolarSystemGenerator.UpdateAnimation(DELTA_TIME, animationSpeed);
+            
+            // Update planet name labels
+            UpdatePlanetLabels();
+        }
+
         #endregion
+
+        /// <summary>
+        /// Handle animation speed slider change
+        /// </summary>
+        private void AnimationSpeedSlider_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (AnimationSpeedText != null)
+            {
+                AnimationSpeedText.Text = $"{e.NewValue:F1}x";
+            }
+        }
     }
     
 }
