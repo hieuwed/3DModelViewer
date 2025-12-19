@@ -678,15 +678,69 @@ namespace _3DModelViewer
                 {
                     switch (modelType)
                     {
+                        // ===== Mô hình có animation =====
                         case "Hệ mặt trời":
                             LoadSolarSystem();
                             return;
                         case "Chuỗi DNA":
                             LoadDNA();
                             return;
+
+                        // ===== MÔ HÌNH NÂNG CAO (Batch 1) =====
+                        case "Hình xuyến":
+                            LoadAdvancedShape(modelType, AdvancedModelGenerator.GenerateTorus(1.0, 0.3, 32, 16), System.Windows.Media.Colors.Orange);
+                            return;
+                        case "Hình bầu dục":
+                            LoadAdvancedShape(modelType, AdvancedModelGenerator.GenerateEllipsoid(1.5, 1.0, 0.8, 32), System.Windows.Media.Colors.LightPink);
+                            return;
+                        case "Bánh răng":
+                            LoadAdvancedShape(modelType, AdvancedModelGenerator.GenerateGear(0.5, 1.0, 0.3, 12), System.Windows.Media.Colors.Silver);
+                            return;
+                        case "Lò xo":
+                            LoadAdvancedShape(modelType, AdvancedModelGenerator.GenerateSpring(0.5, 0.1, 3.0, 10, 16), System.Windows.Media.Colors.SteelBlue);
+                            return;
+                        case "Mặt Möbius":
+                            LoadAdvancedShape(modelType, AdvancedModelGenerator.GenerateMobiusStrip(1.0, 0.4, 64), System.Windows.Media.Colors.Purple);
+                            return;
+
+                        // ===== MÔ HÌNH GIÁO DỤC MỚI (Batch 2 - Phương án C) =====
+
+                        // Hóa học
+                        case "Phân tử H2O":
+                            LoadMoleculeModel(modelType, EducationalModelGenerator.GenerateH2OMolecule());
+                            return;
+                        case "Cấu trúc kim cương":
+                            LoadMoleculeModel(modelType, EducationalModelGenerator.GenerateDiamondLattice(2.0));
+                            return;
+
+                        // Hình học
+                        case "Lăng trụ tam giác":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateTriangularPrism(1.5, 2.5), System.Windows.Media.Colors.LimeGreen);
+                            return;
+
+                        // Vật lý
+                        case "Sóng sin 3D":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateSineWave3D(0.5, 2.0, 3, 64), System.Windows.Media.Colors.DeepSkyBlue);
+                            return;
+
+                        // Toán học - Platonic Solids
+                        case "Tetrahedron":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateTetrahedron(1.5), System.Windows.Media.Colors.Gold);
+                            return;
+                        case "Octahedron":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateOctahedron(1.5), System.Windows.Media.Colors.Coral);
+                            return;
+                        case "Icosahedron":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateIcosahedron(1.5), System.Windows.Media.Colors.MediumPurple);
+                            return;
+
+                        // Toán học - Fibonacci
+                        case "Xoắn ốc Fibonacci":
+                            LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateFibonacciSpiral(500, 2.0), System.Windows.Media.Colors.DarkOrange);
+                            return;
                     }
 
-                    // Basic shapes
+                    // ===== Basic shapes (giữ nguyên code cũ) =====
                     LoadBasicShape(modelType);
                 }
                 catch (Exception ex)
@@ -1082,6 +1136,101 @@ namespace _3DModelViewer
         }
 
         #endregion
+        private void LoadAdvancedShape(string shapeName, MeshGeometry3D mesh, System.Windows.Media.Color color)
+        {
+            UpdateStatus($"Đang tạo {shapeName}...");
+
+            // Create material with custom color
+            var material = new DiffuseMaterial(new SolidColorBrush(color));
+            var specular = new SpecularMaterial(new SolidColorBrush(System.Windows.Media.Colors.White), 50);
+            var materialGroup = new MaterialGroup();
+            materialGroup.Children.Add(material);
+            materialGroup.Children.Add(specular);
+
+            // Create geometry model
+            var geometryModel = new GeometryModel3D
+            {
+                Geometry = mesh,
+                Material = materialGroup,
+                BackMaterial = materialGroup
+            };
+
+            // Clear previous model
+            ClearCurrentModel();
+
+            // Create model visual
+            var modelGroup = new Model3DGroup();
+            modelGroup.Children.Add(geometryModel);
+            _currentModelVisual = new ModelVisual3D { Content = modelGroup };
+            _currentModelVisual.Transform = _modelTransform;
+
+            // Add to viewport
+            Viewport3D.Children.Add(_currentModelVisual);
+
+            // Zoom to fit
+            Viewport3D.ZoomExtents();
+
+            // Create sample model info
+            var sampleModel = new Model3DFile(
+                shapeName,
+                mesh.Positions.Count,
+                mesh.TriangleIndices.Count / 3
+            );
+            _currentModel = sampleModel;
+
+            // Hide animation controls
+            AnimationControlsGroup.Visibility = Visibility.Collapsed;
+
+            // Update UI
+            UpdateModelInfo(sampleModel);
+            UpdateStatus($"Đã tạo {shapeName}");
+        }
+
+        private void LoadMoleculeModel(string modelName, Model3DGroup modelGroup)
+        {
+            UpdateStatus($"Đang tạo {modelName}...");
+
+            // Clear previous model
+            ClearCurrentModel();
+
+            // Create model visual
+            _currentModelVisual = new ModelVisual3D { Content = modelGroup };
+            _currentModelVisual.Transform = _modelTransform;
+
+            // Add to viewport
+            Viewport3D.Children.Add(_currentModelVisual);
+
+            // Zoom to fit
+            Viewport3D.ZoomExtents();
+
+            // Count vertices and faces from all children
+            int totalVertices = 0;
+            int totalFaces = 0;
+
+            foreach (var child in modelGroup.Children)
+            {
+                if (child is GeometryModel3D geoModel && geoModel.Geometry is MeshGeometry3D mesh)
+                {
+                    totalVertices += mesh.Positions.Count;
+                    totalFaces += mesh.TriangleIndices.Count / 3;
+                }
+            }
+
+            // Create sample model info
+            var sampleModel = new Model3DFile(
+                modelName,
+                totalVertices,
+                totalFaces
+            );
+            _currentModel = sampleModel;
+
+            // Hide animation controls
+            AnimationControlsGroup.Visibility = Visibility.Collapsed;
+
+            // Update UI
+            UpdateModelInfo(sampleModel);
+            UpdateStatus($"Đã tạo {modelName}");
+        }
 
         /// <summary>
         /// Handle animation speed slider change

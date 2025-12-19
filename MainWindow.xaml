@@ -6,159 +6,200 @@
         xmlns:helix="http://helix-toolkit.org/wpf"
         xmlns:converters="clr-namespace:_3DModelViewer.Converters"
         mc:Ignorable="d"
-        Title="3D Model Viewer - .NET 8" 
-        Height="800" 
+        Title="3D Model Viewer - .NET 8"
+        Height="800"
         Width="1400"
         WindowState="Maximized"
         Background="#ecf0f1">
-    
+
     <Window.Resources>
         <!-- Converters -->
         <converters:FileSizeConverter x:Key="FileSizeConverter"/>
-        
+
         <!-- Toolbar Button Style -->
-        <Style x:Key="ToolbarButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="50"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Background" Value="#34495e"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="20"/>
+        <Style x:Key="ToolbarButtonStyle"
+                TargetType="Button">
+            <Setter Property="Width"
+                    Value="50"/>
+            <Setter Property="Height"
+                    Value="50"/>
+            <Setter Property="Margin"
+                    Value="5"/>
+            <Setter Property="Background"
+                    Value="#34495e"/>
+            <Setter Property="Foreground"
+                    Value="White"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+            <Setter Property="FontSize"
+                    Value="20"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="8"
                                 BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#4a5f7f"/>
+                <Trigger Property="IsMouseOver"
+                        Value="True">
+                    <Setter Property="Background"
+                            Value="#4a5f7f"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <!-- Control Button Style -->
-        <Style x:Key="ControlButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#3498db"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="13"/>
+        <Style x:Key="ControlButtonStyle"
+                TargetType="Button">
+            <Setter Property="Background"
+                    Value="#3498db"/>
+            <Setter Property="Foreground"
+                    Value="White"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+            <Setter Property="Padding"
+                    Value="10,8"/>
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+            <Setter Property="FontSize"
+                    Value="13"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2980b9"/>
+                <Trigger Property="IsMouseOver"
+                        Value="True">
+                    <Setter Property="Background"
+                            Value="#2980b9"/>
                 </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Background" Value="#95a5a6"/>
-                    <Setter Property="Cursor" Value="Arrow"/>
+                <Trigger Property="IsEnabled"
+                        Value="False">
+                    <Setter Property="Background"
+                            Value="#95a5a6"/>
+                    <Setter Property="Cursor"
+                            Value="Arrow"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        
+
         <!-- TOP TOOLBAR -->
-        <Border Grid.Row="0" Grid.ColumnSpan="3" 
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="3"
                 Background="#2c3e50">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="📦 3D Viewer" 
-                          FontSize="24" 
-                          Foreground="White" 
-                          Margin="20,0" 
-                          VerticalAlignment="Center" 
-                          FontWeight="Bold"/>
-                
-                <Rectangle Width="2" Height="50" Fill="#34495e" Margin="10,0"/>
-                
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="📁" 
+            <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                <TextBlock Text="📦 3D Viewer"
+                           FontSize="24"
+                           Foreground="White"
+                           Margin="20,0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"/>
+
+                <Rectangle Width="2"
+                        Height="50"
+                        Fill="#34495e"
+                        Margin="10,0"/>
+
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="📁"
                         ToolTip="Mở file"
                         Click="OpenFile_Click"/>
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="📂" 
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="📂"
                         ToolTip="Mở thư mục"
                         Click="OpenFolder_Click"/>
-                
-                <Rectangle Width="2" Height="50" Fill="#34495e" Margin="10,0"/>
-                
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="🔄" 
+
+                <Rectangle Width="2"
+                        Height="50"
+                        Fill="#34495e"
+                        Margin="10,0"/>
+
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="🔄"
                         ToolTip="Reset camera"
                         Click="ResetCamera_Click"/>
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="💡" 
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="💡"
                         ToolTip="Lighting"
                         Click="ToggleLighting_Click"/>
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="📏" 
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="📏"
                         ToolTip="Show grid"
                         Click="ToggleGrid_Click"/>
-                
-                <Rectangle Width="2" Height="50" Fill="#34495e" Margin="10,0"/>
-                
-                <Button Style="{StaticResource ToolbarButtonStyle}" 
-                        Content="📸" 
+
+                <Rectangle Width="2"
+                        Height="50"
+                        Fill="#34495e"
+                        Margin="10,0"/>
+
+                <Button Style="{StaticResource ToolbarButtonStyle}"
+                        Content="📸"
                         ToolTip="Screenshot"
                         Click="TakeScreenshot_Click"/>
             </StackPanel>
         </Border>
-        
+
         <!-- LEFT PANEL - File Explorer -->
-        <Border Grid.Row="1" Grid.Column="0" 
-                Background="#ecf0f1" 
-                BorderBrush="#bdc3c7" 
+        <Border Grid.Row="1"
+                Grid.Column="0"
+                Background="#ecf0f1"
+                BorderBrush="#bdc3c7"
                 BorderThickness="0,0,1,0">
-           <Grid>
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <!-- Sample Models -->
-                <GroupBox Grid.Row="0" 
-                          Header="🎨 Mô hình mẫu" 
+                <GroupBox Grid.Row="0"
+                          Header="🎨 Mô hình mẫu"
                           Margin="15,15,15,10"
                           Padding="10"
                           Background="White">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="400">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  MaxHeight="550">
                         <StackPanel>
-                            <!-- Hình học cơ bản -->
-                            <TextBlock Text="📐 Hình Học Cơ Bản" FontWeight="Bold" Foreground="#2c3e50" Margin="0,8,0,5"/>
-                            <Button Content="📦 Hình lập phương" 
+
+                            <!-- ===== HÌNH HỌC CƠ BẢN ===== -->
+                            <TextBlock Text="📐 Hình Học Cơ Bản"
+                                       FontWeight="Bold"
+                                       Foreground="#2c3e50"
+                                       Margin="0,8,0,5"/>
+
+                            <Button Content="📦 Hình lập phương"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -167,7 +208,8 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hình lập phương"/>
-                            <Button Content="⚪ Hình cầu" 
+
+                            <Button Content="⚪ Hình cầu"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -176,7 +218,8 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hình cầu"/>
-                            <Button Content="🥫 Hình trụ" 
+
+                            <Button Content="🥫 Hình trụ"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -185,7 +228,8 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hình trụ"/>
-                            <Button Content="🔺 Hình nón" 
+
+                            <Button Content="🔺 Hình nón"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -194,7 +238,8 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hình nón"/>
-                            <Button Content="🔶 Hình chóp" 
+
+                            <Button Content="🔶 Hình chóp"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -203,7 +248,8 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hình chóp"/>
-                            <Button Content="📦 Khối chữ nhật" 
+
+                            <Button Content="📦 Khối chữ nhật"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#3498db"
@@ -212,10 +258,180 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Khối chữ nhật"/>
-                            
-                            <!-- Thiên văn học -->
-                            <TextBlock Text="🌍 Thiên Văn Học" FontWeight="Bold" Foreground="#2c3e50" Margin="0,12,0,5"/>
-                            <Button Content="🌍 Hệ mặt trời" 
+
+                            <Button Content="📐 Lăng trụ tam giác"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#3498db"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Lăng trụ tam giác"/>
+
+                            <!-- ===== HÌNH HỌC NÂNG CAO ===== -->
+                            <TextBlock Text="🔷 Hình Học Nâng Cao"
+                                       FontWeight="Bold"
+                                       Foreground="#e67e22"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="🍩 Hình xuyến"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#e67e22"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Hình xuyến"/>
+
+                            <Button Content="🥚 Hình bầu dục"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#e67e22"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Hình bầu dục"/>
+
+                            <!-- ===== ĐA DIỆN PLATO (MỚI) ===== -->
+                            <TextBlock Text="📊 Đa Diện Plato"
+                                       FontWeight="Bold"
+                                       Foreground="#f39c12"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="🔸 Tetrahedron (4 mặt)"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#f39c12"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Tetrahedron"/>
+
+                            <Button Content="🔶 Octahedron (8 mặt)"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#e67e22"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Octahedron"/>
+
+                            <Button Content="💎 Icosahedron (20 mặt)"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#9b59b6"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Icosahedron"/>
+
+                            <!-- ===== VẬT THỂ KỸ THUẬT ===== -->
+                            <TextBlock Text="⚙️ Vật Thể Kỹ Thuật"
+                                       FontWeight="Bold"
+                                       Foreground="#95a5a6"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="⚙️ Bánh răng"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#95a5a6"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Bánh răng"/>
+
+                            <Button Content="🔃 Lò xo"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#7f8c8d"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Lò xo"/>
+
+                            <!-- ===== HÓA HỌC (MỚI) ===== -->
+                            <TextBlock Text="⚗️ Hóa Học &amp; Phân Tử"
+                                       FontWeight="Bold"
+                                       Foreground="#e74c3c"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="💧 Phân tử H2O"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#3498db"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Phân tử H2O"/>
+
+                            <Button Content="💎 Cấu trúc kim cương"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#34495e"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Cấu trúc kim cương"/>
+
+                            <!-- ===== VẬT LÝ (MỚI) ===== -->
+                            <TextBlock Text="⚡ Vật Lý"
+                                       FontWeight="Bold"
+                                       Foreground="#3498db"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="〰️ Sóng sin 3D"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#3498db"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Sóng sin 3D"/>
+
+                            <!-- ===== TOÁN HỌC (MỚI) ===== -->
+                            <TextBlock Text="🔢 Toán Học"
+                                       FontWeight="Bold"
+                                       Foreground="#9b59b6"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="♾️ Mặt Möbius"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#9b59b6"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Mặt Möbius"/>
+
+                            <Button Content="🌀 Xoắn ốc Fibonacci"
+                                    Margin="0,3"
+                                    Padding="10,8"
+                                    Background="#e67e22"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Click="LoadSampleModel_Click"
+                                    Tag="Xoắn ốc Fibonacci"/>
+
+                            <!-- ===== THIÊN VĂN HỌC ===== -->
+                            <TextBlock Text="🌍 Thiên Văn Học"
+                                       FontWeight="Bold"
+                                       Foreground="#e74c3c"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="🌍 Hệ mặt trời"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#e74c3c"
@@ -224,61 +440,66 @@
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Hệ mặt trời"/>
-                            
-                            <!-- Sinh học -->
-                            <TextBlock Text="🧬 Sinh Học" FontWeight="Bold" Foreground="#2c3e50" Margin="0,12,0,5"/>
-                            <Button Content="🧬 Chuỗi DNA" 
+
+                            <!-- ===== SINH HỌC ===== -->
+                            <TextBlock Text="🧬 Sinh Học"
+                                       FontWeight="Bold"
+                                       Foreground="#16a085"
+                                       Margin="0,12,0,5"/>
+
+                            <Button Content="🧬 Chuỗi DNA"
                                     Margin="0,3"
                                     Padding="10,8"
-                                    Background="#9b59b6"
+                                    Background="#16a085"
                                     Foreground="White"
                                     BorderThickness="0"
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
                                     Tag="Chuỗi DNA"/>
+
                         </StackPanel>
                     </ScrollViewer>
                 </GroupBox>
-                
+
                 <!-- Search Box -->
-                <Border Grid.Row="1" 
-                        Background="White" 
-                        Margin="15" 
-                        Padding="12,10" 
+                <Border Grid.Row="1"
+                        Background="White"
+                        Margin="15"
+                        Padding="12,10"
                         CornerRadius="8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <TextBox x:Name="SearchBox" 
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                BorderThickness="0"
-                                FontSize="14"
-                                Text="Tìm kiếm..."
-                                Foreground="Gray"
-                                GotFocus="SearchBox_GotFocus"
-                                LostFocus="SearchBox_LostFocus"
-                                TextChanged="SearchBox_TextChanged"/>
-                        
-                        <TextBlock Grid.Column="1" 
-                                  Text="🔍" 
-                                  FontSize="18" 
-                                  VerticalAlignment="Center"
-                                  Margin="10,0,0,0"/>
+
+                        <TextBox x:Name="SearchBox"
+                                 Grid.Column="0"
+                                 VerticalAlignment="Center"
+                                 BorderThickness="0"
+                                 FontSize="14"
+                                 Text="Tìm kiếm..."
+                                 Foreground="Gray"
+                                 GotFocus="SearchBox_GotFocus"
+                                 LostFocus="SearchBox_LostFocus"
+                                 TextChanged="SearchBox_TextChanged"/>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="🔍"
+                                   FontSize="18"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
                     </Grid>
                 </Border>
-                
+
                 <!-- File List -->
-                <ListBox x:Name="FileListBox" 
-                        Grid.Row="2"
-                        Margin="15,0,15,15"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        SelectionChanged="FileListBox_SelectionChanged">
+                <ListBox x:Name="FileListBox"
+                         Grid.Row="2"
+                         Margin="15,0,15,15"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         SelectionChanged="FileListBox_SelectionChanged">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Template">
@@ -294,13 +515,23 @@
                                             <ContentPresenter/>
                                         </Border>
                                         <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Border" Property="Background" Value="#f8f9fa"/>
-                                                <Setter TargetName="Border" Property="BorderBrush" Value="#3498db"/>
+                                            <Trigger Property="IsMouseOver"
+                                                    Value="True">
+                                                <Setter TargetName="Border"
+                                                        Property="Background"
+                                                        Value="#f8f9fa"/>
+                                                <Setter TargetName="Border"
+                                                        Property="BorderBrush"
+                                                        Value="#3498db"/>
                                             </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Border" Property="Background" Value="#e3f2fd"/>
-                                                <Setter TargetName="Border" Property="BorderBrush" Value="#2196F3"/>
+                                            <Trigger Property="IsSelected"
+                                                    Value="True">
+                                                <Setter TargetName="Border"
+                                                        Property="Background"
+                                                        Value="#e3f2fd"/>
+                                                <Setter TargetName="Border"
+                                                        Property="BorderBrush"
+                                                        Value="#2196F3"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -308,7 +539,7 @@
                             </Setter>
                         </Style>
                     </ListBox.ItemContainerStyle>
-                    
+
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -316,29 +547,29 @@
                                     <ColumnDefinition Width="50"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <!-- Thumbnail -->
-                                <Border Grid.Column="0" 
-                                       Width="50" 
-                                       Height="50"
-                                       Background="#34495e"
-                                       CornerRadius="8">
-                                    <TextBlock Text="📦" 
-                                              FontSize="24"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                                <Border Grid.Column="0"
+                                        Width="50"
+                                        Height="50"
+                                        Background="#34495e"
+                                        CornerRadius="8">
+                                    <TextBlock Text="📦"
+                                               FontSize="24"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
                                 </Border>
-                                
+
                                 <!-- File Info -->
-                                <StackPanel Grid.Column="1" 
-                                           Margin="12,0,0,0"
-                                           VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding FileName}" 
-                                              FontWeight="Bold"
-                                              FontSize="13"
-                                              TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Foreground="Gray" 
-                                              FontSize="11">
+                                <StackPanel Grid.Column="1"
+                                            Margin="12,0,0,0"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding FileName}"
+                                               FontWeight="Bold"
+                                               FontSize="13"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Foreground="Gray"
+                                               FontSize="11">
                                         <Run Text="{Binding FileExtension}"/>
                                         <Run Text=" • "/>
                                         <Run Text="{Binding Path=., Converter={StaticResource FileSizeConverter}}"/>
@@ -350,103 +581,115 @@
                 </ListBox>
             </Grid>
         </Border>
-        
+
         <!-- CENTER - 3D Viewport -->
-        <Border Grid.Row="1" Grid.Column="1" 
+        <Border Grid.Row="1"
+                Grid.Column="1"
                 Background="#95a5a6">
             <Grid>
                 <!-- 3D Viewport -->
                 <helix:HelixViewport3D x:Name="Viewport3D"
-                                      Background="#95a5a6"
-                                      ShowCoordinateSystem="True"
-                                      ShowViewCube="True"
-                                      ZoomExtentsWhenLoaded="True"
-                                      CameraRotationMode="Turntable">
-                    
+                                       Background="#95a5a6"
+                                       ShowCoordinateSystem="True"
+                                       ShowViewCube="True"
+                                       ZoomExtentsWhenLoaded="True"
+                                       CameraRotationMode="Turntable">
+
                     <!-- Camera -->
                     <helix:HelixViewport3D.Camera>
                         <PerspectiveCamera x:Name="Camera"
-                                          Position="5,5,5" 
-                                          LookDirection="-5,-5,-5"
-                                          UpDirection="0,1,0"
-                                          FieldOfView="45"/>
+                                           Position="5,5,5"
+                                           LookDirection="-5,-5,-5"
+                                           UpDirection="0,1,0"
+                                           FieldOfView="45"/>
                     </helix:HelixViewport3D.Camera>
-                    
+
                     <!-- Default Lighting -->
                     <helix:DefaultLights/>
-                    
+
                     <!-- Grid -->
                     <helix:GridLinesVisual3D x:Name="GridLines"
-                                            Width="20"
-                                            Length="20"
-                                            MinorDistance="1"
-                                            MajorDistance="5"
-                                            Thickness="0.01"
-                                            Fill="#40000000"/>
+                                             Width="20"
+                                             Length="20"
+                                             MinorDistance="1"
+                                             MajorDistance="5"
+                                             Thickness="0.01"
+                                             Fill="#40000000"/>
                 </helix:HelixViewport3D>
-                
+
                 <!-- Canvas overlay for planet labels -->
                 <Canvas x:Name="PlanetLabelsCanvas"
                         Background="Transparent"
                         IsHitTestVisible="False"/>
             </Grid>
         </Border>
-        
+
         <!-- RIGHT PANEL - Properties & Controls -->
-        <Border Grid.Row="1" Grid.Column="2" 
-                Background="#ecf0f1" 
-                BorderBrush="#bdc3c7" 
+        <Border Grid.Row="1"
+                Grid.Column="2"
+                Background="#ecf0f1"
+                BorderBrush="#bdc3c7"
                 BorderThickness="1,0,0,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="15">
-                    
+
                     <!-- Model Info -->
-                    <GroupBox Header="📊 Thông tin Model" 
+                    <GroupBox Header="📊 Thông tin Model"
                               Margin="0,0,0,15"
                               Padding="10"
                               Background="White">
                         <StackPanel>
-                            <TextBlock Text="Tên file:" FontWeight="Bold" Margin="0,5"/>
-                            <TextBlock x:Name="FileNameText" 
-                                      Text="Chưa có file" 
-                                      TextWrapping="Wrap"
-                                      Foreground="#34495e"
-                                      Background="#f8f9fa"
-                                      Padding="8"
-                                      Margin="0,5,0,10"/>
-                            
-                            <TextBlock Text="Số đỉnh:" FontWeight="Bold" Margin="0,5"/>
-                            <TextBlock x:Name="VertexCountText" 
-                                      Text="0"
-                                      Background="#f8f9fa"
-                                      Padding="8"
-                                      Margin="0,5,0,10"/>
-                            
-                            <TextBlock Text="Số mặt:" FontWeight="Bold" Margin="0,5"/>
-                            <TextBlock x:Name="FaceCountText" 
-                                      Text="0"
-                                      Background="#f8f9fa"
-                                      Padding="8"
-                                      Margin="0,5,0,10"/>
-                            
-                            <TextBlock Text="Số mesh:" FontWeight="Bold" Margin="0,5"/>
-                            <TextBlock x:Name="MeshCountText" 
-                                      Text="0"
-                                      Background="#f8f9fa"
-                                      Padding="8"
-                                      Margin="0,5,0,10"/>
-                            
-                            <TextBlock Text="Kích thước file:" FontWeight="Bold" Margin="0,5"/>
-                            <TextBlock x:Name="FileSizeText" 
-                                      Text="0 KB"
-                                      Background="#f8f9fa"
-                                      Padding="8"
-                                      Margin="0,5,0,0"/>
+                            <TextBlock Text="Tên file:"
+                                    FontWeight="Bold"
+                                    Margin="0,5"/>
+                            <TextBlock x:Name="FileNameText"
+                                       Text="Chưa có file"
+                                       TextWrapping="Wrap"
+                                       Foreground="#34495e"
+                                       Background="#f8f9fa"
+                                       Padding="8"
+                                       Margin="0,5,0,10"/>
+
+                            <TextBlock Text="Số đỉnh:"
+                                    FontWeight="Bold"
+                                    Margin="0,5"/>
+                            <TextBlock x:Name="VertexCountText"
+                                       Text="0"
+                                       Background="#f8f9fa"
+                                       Padding="8"
+                                       Margin="0,5,0,10"/>
+
+                            <TextBlock Text="Số mặt:"
+                                    FontWeight="Bold"
+                                    Margin="0,5"/>
+                            <TextBlock x:Name="FaceCountText"
+                                       Text="0"
+                                       Background="#f8f9fa"
+                                       Padding="8"
+                                       Margin="0,5,0,10"/>
+
+                            <TextBlock Text="Số mesh:"
+                                    FontWeight="Bold"
+                                    Margin="0,5"/>
+                            <TextBlock x:Name="MeshCountText"
+                                       Text="0"
+                                       Background="#f8f9fa"
+                                       Padding="8"
+                                       Margin="0,5,0,10"/>
+
+                            <TextBlock Text="Kích thước file:"
+                                    FontWeight="Bold"
+                                    Margin="0,5"/>
+                            <TextBlock x:Name="FileSizeText"
+                                       Text="0 KB"
+                                       Background="#f8f9fa"
+                                       Padding="8"
+                                       Margin="0,5,0,0"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <!-- Animation Controls -->
-                    <GroupBox Header="▶️ Điều khiển Animation" 
+                    <GroupBox Header="▶️ Điều khiển Animation"
                               Margin="0,0,0,15"
                               Padding="10"
                               Background="White"
@@ -454,162 +697,175 @@
                               Visibility="Collapsed">
                         <StackPanel>
                             <Button x:Name="PlayPauseButton"
-                                   Content="▶️ Phát"
-                                   Style="{StaticResource ControlButtonStyle}"
-                                   Margin="0,5"
-                                   Click="PlayPause_Click"/>
-                            
-                            <TextBlock Text="Tốc độ Animation:" Margin="0,10,0,5"/>
-                            <Slider x:Name="AnimationSpeedSlider" 
-                                   Minimum="0.1" 
-                                   Maximum="5.0" 
-                                   Value="1.0"
-                                   SmallChange="0.1"
-                                   LargeChange="0.5"
-                                   ValueChanged="AnimationSpeedSlider_ValueChanged"
-                                   Margin="0,5"/>
+                                    Content="▶️ Phát"
+                                    Style="{StaticResource ControlButtonStyle}"
+                                    Margin="0,5"
+                                    Click="PlayPause_Click"/>
+
+                            <TextBlock Text="Tốc độ Animation:"
+                                    Margin="0,10,0,5"/>
+                            <Slider x:Name="AnimationSpeedSlider"
+                                    Minimum="0.1"
+                                    Maximum="5.0"
+                                    Value="1.0"
+                                    SmallChange="0.1"
+                                    LargeChange="0.5"
+                                    ValueChanged="AnimationSpeedSlider_ValueChanged"
+                                    Margin="0,5"/>
                             <TextBlock x:Name="AnimationSpeedText"
-                                      Text="1.0x"
-                                      HorizontalAlignment="Center"
-                                      Foreground="Gray"
-                                      Margin="0,5,0,10"/>
-                            
-                            <CheckBox x:Name="ShowOrbitalPathsCheck" 
-                                     Content="Hiển thị quỹ đạo"
-                                     IsChecked="True"
-                                     Margin="0,5"/>
+                                       Text="1.0x"
+                                       HorizontalAlignment="Center"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,10"/>
+
+                            <CheckBox x:Name="ShowOrbitalPathsCheck"
+                                      Content="Hiển thị quỹ đạo"
+                                      IsChecked="True"
+                                      Margin="0,5"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <!-- Camera Controls -->
-                    <GroupBox Header="📷 Điều khiển Camera" 
+                    <GroupBox Header="📷 Điều khiển Camera"
                               Margin="0,0,0,15"
                               Padding="10"
                               Background="White">
                         <StackPanel>
-                            <TextBlock Text="Góc nhìn:" Margin="0,5"/>
-                            <Slider x:Name="FovSlider" 
-                                   Minimum="10" 
-                                   Maximum="120" 
-                                   Value="45"
-                                   ValueChanged="FovSlider_ValueChanged"
-                                   Margin="0,5"/>
+                            <TextBlock Text="Góc nhìn:"
+                                    Margin="0,5"/>
+                            <Slider x:Name="FovSlider"
+                                    Minimum="10"
+                                    Maximum="120"
+                                    Value="45"
+                                    ValueChanged="FovSlider_ValueChanged"
+                                    Margin="0,5"/>
                             <TextBlock x:Name="FovValueText"
-                                      Text="45°"
-                                      HorizontalAlignment="Center"
-                                      Foreground="Gray"
-                                      Margin="0,5,0,10"/>
-                            
-                            <Button Content="🔼 View Front" 
-                                   Style="{StaticResource ControlButtonStyle}"
-                                   Margin="0,5"
-                                   Click="ViewFront_Click"/>
-                            <Button Content="🔝 View Top" 
-                                   Style="{StaticResource ControlButtonStyle}"
-                                   Margin="0,5"
-                                   Click="ViewTop_Click"/>
-                            <Button Content="◀️ View Side" 
-                                   Style="{StaticResource ControlButtonStyle}"
-                                   Margin="0,5"
-                                   Click="ViewSide_Click"/>
+                                       Text="45°"
+                                       HorizontalAlignment="Center"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,10"/>
+
+                            <Button Content="🔼 View Front"
+                                    Style="{StaticResource ControlButtonStyle}"
+                                    Margin="0,5"
+                                    Click="ViewFront_Click"/>
+                            <Button Content="🔝 View Top"
+                                    Style="{StaticResource ControlButtonStyle}"
+                                    Margin="0,5"
+                                    Click="ViewTop_Click"/>
+                            <Button Content="◀️ View Side"
+                                    Style="{StaticResource ControlButtonStyle}"
+                                    Margin="0,5"
+                                    Click="ViewSide_Click"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <!-- Render Settings -->
-                    <GroupBox Header="🎨 Cài đặt Render" 
+                    <GroupBox Header="🎨 Cài đặt Render"
                               Margin="0,0,0,15"
                               Padding="10"
                               Background="White">
                         <StackPanel>
-                            <CheckBox x:Name="ShowWireframeCheck" 
-                                     Content="Hiển thị Wireframe"
-                                     Margin="0,5"
-                                     Checked="ShowWireframe_Changed"
-                                     Unchecked="ShowWireframe_Changed"/>
-                            
-                            <CheckBox x:Name="ShowGridCheck" 
-                                     Content="Hiển thị Grid"
-                                     IsChecked="True"
-                                     Margin="0,5"
-                                     Checked="ShowGrid_Changed"
-                                     Unchecked="ShowGrid_Changed"/>
-                            
-                            <CheckBox x:Name="ShowAxesCheck" 
-                                     Content="Hiển thị trục tọa độ"
-                                     IsChecked="True"
-                                     Margin="0,5"
-                                     Checked="ShowAxes_Changed"
-                                     Unchecked="ShowAxes_Changed"/>
-                            
-                            <CheckBox x:Name="EnableLightingCheck" 
-                                     Content="Bật ánh sáng"
-                                     IsChecked="True"
-                                     Margin="0,5"
-                                     Checked="EnableLighting_Changed"
-                                     Unchecked="EnableLighting_Changed"/>
-                            
-                            <TextBlock Text="Màu nền:" Margin="0,10,0,5"/>
+                            <CheckBox x:Name="ShowWireframeCheck"
+                                      Content="Hiển thị Wireframe"
+                                      Margin="0,5"
+                                      Checked="ShowWireframe_Changed"
+                                      Unchecked="ShowWireframe_Changed"/>
+
+                            <CheckBox x:Name="ShowGridCheck"
+                                      Content="Hiển thị Grid"
+                                      IsChecked="True"
+                                      Margin="0,5"
+                                      Checked="ShowGrid_Changed"
+                                      Unchecked="ShowGrid_Changed"/>
+
+                            <CheckBox x:Name="ShowAxesCheck"
+                                      Content="Hiển thị trục tọa độ"
+                                      IsChecked="True"
+                                      Margin="0,5"
+                                      Checked="ShowAxes_Changed"
+                                      Unchecked="ShowAxes_Changed"/>
+
+                            <CheckBox x:Name="EnableLightingCheck"
+                                      Content="Bật ánh sáng"
+                                      IsChecked="True"
+                                      Margin="0,5"
+                                      Checked="EnableLighting_Changed"
+                                      Unchecked="EnableLighting_Changed"/>
+
+                            <TextBlock Text="Màu nền:"
+                                    Margin="0,10,0,5"/>
                             <ComboBox x:Name="BackgroundColorCombo"
-                                     SelectionChanged="BackgroundColor_Changed">
-                                <ComboBoxItem Content="Xám nhạt" Tag="#95a5a6" IsSelected="True"/>
-                                <ComboBoxItem Content="Trắng" Tag="#FFFFFF"/>
-                                <ComboBoxItem Content="Đen" Tag="#000000"/>
-                                <ComboBoxItem Content="Xanh dương" Tag="#3498db"/>
+                                      SelectionChanged="BackgroundColor_Changed">
+                                <ComboBoxItem Content="Xám nhạt"
+                                        Tag="#95a5a6"
+                                        IsSelected="True"/>
+                                <ComboBoxItem Content="Trắng"
+                                        Tag="#FFFFFF"/>
+                                <ComboBoxItem Content="Đen"
+                                        Tag="#000000"/>
+                                <ComboBoxItem Content="Xanh dương"
+                                        Tag="#3498db"/>
                             </ComboBox>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <!-- Transform Controls -->
-                    <GroupBox Header="🔄 Biến đổi" 
+                    <GroupBox Header="🔄 Biến đổi"
                               Margin="0,0,0,15"
                               Padding="10"
                               Background="White">
                         <StackPanel>
-                            <TextBlock Text="Xoay X:" Margin="0,5"/>
-                            <Slider x:Name="RotateXSlider" 
-                                   Minimum="0" 
-                                   Maximum="360" 
-                                   Value="0"
-                                   ValueChanged="RotateX_ValueChanged"
-                                   Margin="0,5"/>
-                            
-                            <TextBlock Text="Xoay Y:" Margin="0,10,0,5"/>
-                            <Slider x:Name="RotateYSlider" 
-                                   Minimum="0" 
-                                   Maximum="360" 
-                                   Value="0"
-                                   ValueChanged="RotateY_ValueChanged"
-                                   Margin="0,5"/>
-                            
-                            <TextBlock Text="Xoay Z:" Margin="0,10,0,5"/>
-                            <Slider x:Name="RotateZSlider" 
-                                   Minimum="0" 
-                                   Maximum="360" 
-                                   Value="0"
-                                   ValueChanged="RotateZ_ValueChanged"
-                                   Margin="0,5"/>
-                            
-                            <TextBlock Text="Tỷ lệ:" Margin="0,10,0,5"/>
-                            <Slider x:Name="ScaleSlider" 
-                                   Minimum="0.1" 
-                                   Maximum="5" 
-                                   Value="1"
-                                   ValueChanged="Scale_ValueChanged"
-                                   Margin="0,5"/>
-                            
-                            <Button Content="↺ Reset Transform" 
-                                   Style="{StaticResource ControlButtonStyle}"
-                                   Margin="0,10,0,0"
-                                   Click="ResetTransform_Click"/>
+                            <TextBlock Text="Xoay X:"
+                                    Margin="0,5"/>
+                            <Slider x:Name="RotateXSlider"
+                                    Minimum="0"
+                                    Maximum="360"
+                                    Value="0"
+                                    ValueChanged="RotateX_ValueChanged"
+                                    Margin="0,5"/>
+
+                            <TextBlock Text="Xoay Y:"
+                                    Margin="0,10,0,5"/>
+                            <Slider x:Name="RotateYSlider"
+                                    Minimum="0"
+                                    Maximum="360"
+                                    Value="0"
+                                    ValueChanged="RotateY_ValueChanged"
+                                    Margin="0,5"/>
+
+                            <TextBlock Text="Xoay Z:"
+                                    Margin="0,10,0,5"/>
+                            <Slider x:Name="RotateZSlider"
+                                    Minimum="0"
+                                    Maximum="360"
+                                    Value="0"
+                                    ValueChanged="RotateZ_ValueChanged"
+                                    Margin="0,5"/>
+
+                            <TextBlock Text="Tỷ lệ:"
+                                    Margin="0,10,0,5"/>
+                            <Slider x:Name="ScaleSlider"
+                                    Minimum="0.1"
+                                    Maximum="5"
+                                    Value="1"
+                                    ValueChanged="Scale_ValueChanged"
+                                    Margin="0,5"/>
+
+                            <Button Content="↺ Reset Transform"
+                                    Style="{StaticResource ControlButtonStyle}"
+                                    Margin="0,10,0,0"
+                                    Click="ResetTransform_Click"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                 </StackPanel>
             </ScrollViewer>
         </Border>
-        
+
         <!-- BOTTOM STATUS BAR -->
-        <Border Grid.Row="2" Grid.ColumnSpan="3" 
+        <Border Grid.Row="2"
+                Grid.ColumnSpan="3"
                 Background="#34495e">
             <Grid Margin="15,0">
                 <Grid.ColumnDefinitions>
@@ -617,28 +873,28 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
-                <TextBlock x:Name="StatusText" 
-                          Grid.Column="0"
-                          Text="Sẵn sàng - Vui lòng mở file 3D" 
-                          Foreground="White"
-                          VerticalAlignment="Center"/>
-                
-                <TextBlock x:Name="FpsText" 
-                          Grid.Column="1"
-                          Text="FPS: 60" 
-                          Foreground="#95a5a6"
-                          VerticalAlignment="Center"
-                          Margin="15,0"/>
-                
-                <TextBlock x:Name="CameraPositionText" 
-                          Grid.Column="2"
-                          Text="Camera: (5, 5, 5)" 
-                          Foreground="#95a5a6"
-                          VerticalAlignment="Center"
-                          Margin="15,0"/>
+
+                <TextBlock x:Name="StatusText"
+                           Grid.Column="0"
+                           Text="Sẵn sàng - Vui lòng mở file 3D"
+                           Foreground="White"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="FpsText"
+                           Grid.Column="1"
+                           Text="FPS: 60"
+                           Foreground="#95a5a6"
+                           VerticalAlignment="Center"
+                           Margin="15,0"/>
+
+                <TextBlock x:Name="CameraPositionText"
+                           Grid.Column="2"
+                           Text="Camera: (5, 5, 5)"
+                           Foreground="#95a5a6"
+                           VerticalAlignment="Center"
+                           Margin="15,0"/>
             </Grid>
         </Border>
-        
+
     </Grid>
 </Window>
