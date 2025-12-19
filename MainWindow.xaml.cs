@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -38,6 +37,11 @@ namespace _3DModelViewer
         private DispatcherTimer? _animationTimer;
         private bool _isAnimationRunning = false;
         private Dictionary<string, TextBlock> _planetLabels = new();
+
+        // New Model Generators
+        private SolarSystemGenerator? _currentSolarSystem;
+        private DNAGenerator? _currentDNA;
+        private object? _currentAnimatedModel;
 
         public MainWindow()
         {
@@ -224,6 +228,11 @@ namespace _3DModelViewer
                 PlanetLabelsCanvas.Children.Clear();
             }
             _planetLabels.Clear();
+
+            // Dispose all animated model generators
+            _currentSolarSystem = null;
+            _currentDNA = null;
+            _currentAnimatedModel = null;
 
             // Clear 3D model from viewport
             if (_currentModelVisual != null)
@@ -667,58 +676,18 @@ namespace _3DModelViewer
             {
                 try
                 {
-                    if (modelType == "Hệ mặt trời")
+                    switch (modelType)
                     {
-                        LoadSolarSystem();
-                        return;
+                        case "Hệ mặt trời":
+                            LoadSolarSystem();
+                            return;
+                        case "Chuỗi DNA":
+                            LoadDNA();
+                            return;
                     }
 
-                    UpdateStatus($"Đang tạo {modelType}...");
-                    // Generate the mesh based on model type
-                    MeshGeometry3D mesh = modelType switch
-                    {
-                        "Hình lập phương" => ProceduralModelGenerator.GenerateCube(2.0),
-                        "Hình cầu" => ProceduralModelGenerator.GenerateSphere(1.5, 32),
-                        "Hình trụ" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
-                        "Hình nón" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
-                        "Hình chóp" => ProceduralModelGenerator.GeneratePyramid(2.0),
-                        "Khối chữ nhật" => ProceduralModelGenerator.GenerateCuboid(4.0, 2.0, 3.0),
-                        _ => ProceduralModelGenerator.GenerateCube(2.0)
-                    };
-                    // Create material
-                    var material = new DiffuseMaterial(System.Windows.Media.Brushes.LightBlue);
-                    var specular = new SpecularMaterial(System.Windows.Media.Brushes.White, 30);
-                    var materialGroup = new MaterialGroup();
-                    materialGroup.Children.Add(material);
-                    materialGroup.Children.Add(specular);
-                    // Create geometry model
-                    var geometryModel = new GeometryModel3D
-                    {
-                        Geometry = mesh,
-                        Material = materialGroup,
-                        BackMaterial = materialGroup
-                    };
-                    // Clear previous model
-                    ClearCurrentModel();
-                    // Create model visual
-                    var modelGroup = new Model3DGroup();
-                    modelGroup.Children.Add(geometryModel);
-                    _currentModelVisual = new ModelVisual3D { Content = modelGroup };
-                    _currentModelVisual.Transform = _modelTransform;
-                    // Add to viewport
-                    Viewport3D.Children.Add(_currentModelVisual);
-                    // Zoom to fit
-                    Viewport3D.ZoomExtents();
-                    // Create sample model info
-                    var sampleModel = new Model3DFile(
-                        modelType,
-                        mesh.Positions.Count,
-                        mesh.TriangleIndices.Count / 3
-                    );
-                    _currentModel = sampleModel;
-                    // Update UI
-                    UpdateModelInfo(sampleModel);
-                    UpdateStatus($"Đã tạo {modelType}");
+                    // Basic shapes
+                    LoadBasicShape(modelType);
                 }
                 catch (Exception ex)
                 {
@@ -727,6 +696,69 @@ namespace _3DModelViewer
                     UpdateStatus($"Lỗi: {ex.Message}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Load basic geometric shapes
+        /// </summary>
+        private void LoadBasicShape(string shapeType)
+        {
+            UpdateStatus($"Đang tạo {shapeType}...");
+            MeshGeometry3D mesh = shapeType switch
+            {
+                "Hình lập phương" => ProceduralModelGenerator.GenerateCube(2.0),
+                "Hình cầu" => ProceduralModelGenerator.GenerateSphere(1.5, 32),
+                "Hình trụ" => ProceduralModelGenerator.GenerateCylinder(1.0, 2.0, 32),
+                "Hình nón" => ProceduralModelGenerator.GenerateCone(1.0, 2.0, 32),
+                "Hình chóp" => ProceduralModelGenerator.GeneratePyramid(2.0),
+                "Khối chữ nhật" => ProceduralModelGenerator.GenerateCuboid(4.0, 2.0, 3.0),
+                _ => ProceduralModelGenerator.GenerateCube(2.0)
+            };
+
+            // Create material
+            var material = new DiffuseMaterial(System.Windows.Media.Brushes.LightBlue);
+            var specular = new SpecularMaterial(System.Windows.Media.Brushes.White, 30);
+            var materialGroup = new MaterialGroup();
+            materialGroup.Children.Add(material);
+            materialGroup.Children.Add(specular);
+
+            // Create geometry model
+            var geometryModel = new GeometryModel3D
+            {
+                Geometry = mesh,
+                Material = materialGroup,
+                BackMaterial = materialGroup
+            };
+
+            // Clear previous model
+            ClearCurrentModel();
+
+            // Create model visual
+            var modelGroup = new Model3DGroup();
+            modelGroup.Children.Add(geometryModel);
+            _currentModelVisual = new ModelVisual3D { Content = modelGroup };
+            _currentModelVisual.Transform = _modelTransform;
+
+            // Add to viewport
+            Viewport3D.Children.Add(_currentModelVisual);
+
+            // Zoom to fit
+            Viewport3D.ZoomExtents();
+
+            // Create sample model info
+            var sampleModel = new Model3DFile(
+                shapeType,
+                mesh.Positions.Count,
+                mesh.TriangleIndices.Count / 3
+            );
+            _currentModel = sampleModel;
+
+            // Hide animation controls
+            AnimationControlsGroup.Visibility = Visibility.Collapsed;
+
+            // Update UI
+            UpdateModelInfo(sampleModel);
+            UpdateStatus($"Đã tạo {shapeType}");
         }
 
         /// <summary>
@@ -743,6 +775,9 @@ namespace _3DModelViewer
 
                 // Clear previous model
                 ClearCurrentModel();
+
+                // Initialize solar system generator
+                _currentSolarSystem = new SolarSystemGenerator();
 
                 // Generate solar system
                 _currentModelVisual = SolarSystemGenerator.GenerateSolarSystem();
@@ -763,6 +798,7 @@ namespace _3DModelViewer
                 // Create sample model info
                 var sampleModel = new Model3DFile("Hệ mặt trời", 50000, 1000);
                 _currentModel = sampleModel;
+                _currentAnimatedModel = _currentSolarSystem;
 
                 // Update UI
                 UpdateModelInfo(sampleModel);
@@ -775,6 +811,59 @@ namespace _3DModelViewer
                 UpdateStatus($"Lỗi: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Load and display DNA
+        /// </summary>
+        private void LoadDNA()
+        {
+            try
+            {
+                UpdateStatus("Đang tạo Chuỗi DNA...");
+
+                // Stop previous animation
+                StopAnimation();
+
+                // Clear previous model
+                ClearCurrentModel();
+
+                // Initialize DNA generator
+                _currentDNA = new DNAGenerator();
+
+                // Generate DNA
+                var dnaGroup = _currentDNA.Generate(basePairs: 20, height: 10.0);
+
+                // Create model visual
+                _currentModelVisual = new ModelVisual3D { Content = dnaGroup };
+                _currentModelVisual.Transform = _modelTransform;
+
+                // Add to viewport
+                Viewport3D.Children.Add(_currentModelVisual);
+
+                // Zoom to fit
+                Viewport3D.ZoomExtents();
+
+                // Show animation controls
+                AnimationControlsGroup.Visibility = Visibility.Visible;
+
+                // Create sample model info
+                var sampleModel = new Model3DFile("Chuỗi DNA", 10000, 500);
+                _currentModel = sampleModel;
+                _currentAnimatedModel = _currentDNA;
+
+                // Update UI
+                UpdateModelInfo(sampleModel);
+                UpdateStatus("Đã tạo Chuỗi DNA - Nhấn ▶️ để phát");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi khi tạo DNA: {ex.Message}",
+                              "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                UpdateStatus($"Lỗi: {ex.Message}");
+            }
+        }
+
+
 
         /// <summary>
         /// Create TextBlock labels for each planet

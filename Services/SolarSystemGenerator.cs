@@ -11,7 +11,7 @@ namespace _3DModelViewer.Services
     public class SolarSystemGenerator
     {
         // Animation constants
-        private const double AnimationSpeedFactor = 0.5;
+        private const double AnimationSpeedFactor = 0.05;
         private const double DegreeToAngleThreshold = 360.0;
         private const int DefaultSphereSegments = 32;
         private const int PlanetSphereSegments = 16;
