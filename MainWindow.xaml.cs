@@ -735,7 +735,7 @@ namespace _3DModelViewer
                             return;
 
                         // Toán học - Fibonacci
-                        case "Xoắn ốc Fibonacci":
+                        case "Quả cầu Fibonacci":
                             LoadAdvancedShape(modelType, EducationalModelGenerator.GenerateFibonacciSpiral(500, 2.0), System.Windows.Media.Colors.DarkOrange);
                             return;
                     }

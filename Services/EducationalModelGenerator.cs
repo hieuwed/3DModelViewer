@@ -325,7 +325,6 @@ namespace _3DModelViewer.Services
         #region 7. Fibonacci Spiral 3D ✅
         
         /// <summary>
-        /// Tạo xoắn ốc Fibonacci 3D
         /// Sử dụng thuật toán Fibonacci lattice trên sphere
         /// </summary>
         public static MeshGeometry3D GenerateFibonacciSpiral(int points = 500, double scale = 2.0)

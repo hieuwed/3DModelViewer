@@ -415,7 +415,7 @@
                                     Click="LoadSampleModel_Click"
                                     Tag="Mặt Möbius"/>
 
-                            <Button Content="🌀 Xoắn ốc Fibonacci"
+                            <Button Content="🌀 Quả cầu Fibonacci"
                                     Margin="0,3"
                                     Padding="10,8"
                                     Background="#e67e22"
@@ -423,7 +423,7 @@
                                     BorderThickness="0"
                                     Cursor="Hand"
                                     Click="LoadSampleModel_Click"
-                                    Tag="Xoắn ốc Fibonacci"/>
+                                    Tag="Quả cầu Fibonacci"/>
 
                             <!-- ===== THIÊN VĂN HỌC ===== -->
                             <TextBlock Text="🌍 Thiên Văn Học"
